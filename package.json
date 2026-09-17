@@ -1,7 +1,7 @@
 {
     "name": "styledqrcode-web",
     "widgetName": "StyledQRCode",
-    "version": "1.1.0",
+    "version": "1.0.0",
     "description": "Branded QR codes for Mendix powered by qr-code-styling: dot and corner styles, multi-stop gradients, logo, frames, 17 payload templates (UPI, Wi-Fi, vCard, calendar, WhatsApp, SEPA, PayNow, PromptPay...), save as base64 to an attribute, SVG/PNG/JPEG/WEBP export, ZIP and label-sheet PDF for lists, copy, print, auto refresh with expiry, scannability self-test and bulk rendering.",
     "copyright": "© MX Techies 2026",
     "license": "Apache-2.0",
