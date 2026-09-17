@@ -155,3 +155,16 @@ npm run release   # minified .mpk in dist/<version>
 ## License
 
 Apache-2.0, © MX Techies 2026.
+
+## Screenshots
+
+| | |
+| --- | --- |
+| ![URL code with frame and downloads, UPI payment](docs/screenshots/screenshot-1.png) | ![Wi-Fi login, vCard with logo](docs/screenshots/screenshot-2.png) |
+| ![Bulk list mode, expiring gate pass, payload guard](docs/screenshots/screenshot-3.png) | ![Base64 saved per asset, styling gallery](docs/screenshots/screenshot-4.png) |
+| ![WhatsApp, calendar, SEPA and the other payload templates](docs/screenshots/screenshot-5.png) | ![Cover](docs/cover.png) |
+
+Studio Pro properties: [General and Encoding](docs/screenshots/screenshot-6.png),
+[Design 1](docs/screenshots/screenshot-7.png), [Design 2](docs/screenshots/screenshot-8.png),
+[Frame, Toolbar and Events](docs/screenshots/screenshot-9.png),
+[Save to Mendix, Dynamic and Accessibility](docs/screenshots/screenshot-10.png).
