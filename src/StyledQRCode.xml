@@ -1,0 +1,1158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="com.mxtechies.widget.web.styledqrcode.StyledQRCode" pluginWidget="true" offlineCapable="true" supportedPlatform="Web" xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>Styled QR Code</name>
+    <description>Branded QR codes: dot and corner styles, gradients, logo, circle shape and a 'Scan me' frame. Builds UPI, Wi-Fi, vCard, email, SMS, phone and geo payloads, saves the image as base64 to an attribute, downloads as SVG/PNG/JPEG/WEBP, copies, prints, refreshes on a timer with an expiry countdown, checks that the code still scans and renders a whole list in bulk mode.</description>
+    <studioProCategory>Display</studioProCategory>
+    <studioCategory>Display</studioCategory>
+    <properties>
+        <propertyGroup caption="General">
+            <propertyGroup caption="Data">
+                <property key="displayMode" type="enumeration" defaultValue="single">
+                    <caption>Render as</caption>
+                    <description>'Single' renders one QR code from the page context and offers all payload templates. 'List' renders one QR code per object of a data source.</description>
+                    <enumerationValues>
+                        <enumerationValue key="single">Single QR code</enumerationValue>
+                        <enumerationValue key="list">List of QR codes</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="payloadType" type="enumeration" defaultValue="text">
+                    <caption>Payload</caption>
+                    <description>What the QR code encodes. Templates build the correct string from the fields below; 'Text or URL' encodes the value as is.</description>
+                    <enumerationValues>
+                        <enumerationValue key="text">Text or URL</enumerationValue>
+                        <enumerationValue key="upi">UPI payment</enumerationValue>
+                        <enumerationValue key="wifi">Wi-Fi login</enumerationValue>
+                        <enumerationValue key="vcard">vCard contact</enumerationValue>
+                        <enumerationValue key="email">Email</enumerationValue>
+                        <enumerationValue key="sms">SMS</enumerationValue>
+                        <enumerationValue key="phone">Phone call</enumerationValue>
+                        <enumerationValue key="geo">Geo location</enumerationValue>
+                        <enumerationValue key="maps">Map link</enumerationValue>
+                        <enumerationValue key="calendar">Calendar event</enumerationValue>
+                        <enumerationValue key="whatsapp">WhatsApp chat</enumerationValue>
+                        <enumerationValue key="telegram">Telegram</enumerationValue>
+                        <enumerationValue key="epc">SEPA bank transfer (EPC)</enumerationValue>
+                        <enumerationValue key="bitcoin">Bitcoin payment</enumerationValue>
+                        <enumerationValue key="paypal">PayPal.Me</enumerationValue>
+                        <enumerationValue key="promptpay">PromptPay (Thailand)</enumerationValue>
+                        <enumerationValue key="paynow">PayNow (Singapore)</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="value" type="expression" required="false">
+                    <caption>Value</caption>
+                    <description>Text or URL to encode, e.g. 'https://mxtechies.com' or $currentObject/Code.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="caption" type="textTemplate" required="false">
+                    <caption>Caption</caption>
+                    <description>Optional text shown under the QR code.</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="UPI payment">
+                <property key="upiVpa" type="expression" required="false">
+                    <caption>Payee VPA</caption>
+                    <description>UPI id of the payee (pa), e.g. 'shop@upi'.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="upiName" type="expression" required="false">
+                    <caption>Payee name</caption>
+                    <description>Name shown in the payment app (pn).</description>
+                    <returnType type="String" />
+                </property>
+                <property key="upiAmount" type="expression" required="false">
+                    <caption>Amount</caption>
+                    <description>Amount to pay (am). Leave empty to let the payer enter it.</description>
+                    <returnType type="Decimal" />
+                </property>
+                <property key="upiCurrency" type="expression" required="false" defaultValue="'INR'">
+                    <caption>Currency</caption>
+                    <description>ISO currency code (cu). UPI currently only supports INR.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="upiNote" type="expression" required="false">
+                    <caption>Note</caption>
+                    <description>Transaction note shown to the payer (tn).</description>
+                    <returnType type="String" />
+                </property>
+                <property key="upiTransactionRef" type="expression" required="false">
+                    <caption>Transaction reference</caption>
+                    <description>Your own reference for reconciliation (tr), e.g. an order number.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Wi-Fi login">
+                <property key="wifiSsid" type="expression" required="false">
+                    <caption>Network name (SSID)</caption>
+                    <description>Name of the Wi-Fi network.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="wifiPassword" type="expression" required="false">
+                    <caption>Password</caption>
+                    <description>Wi-Fi password. Ignored for open networks.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="wifiEncryption" type="enumeration" defaultValue="WPA">
+                    <caption>Encryption</caption>
+                    <description>Security type of the network.</description>
+                    <enumerationValues>
+                        <enumerationValue key="WPA">WPA / WPA2 / WPA3</enumerationValue>
+                        <enumerationValue key="WEP">WEP</enumerationValue>
+                        <enumerationValue key="nopass">Open (no password)</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="wifiHidden" type="expression" required="false" defaultValue="false">
+                    <caption>Hidden network</caption>
+                    <description>True when the network does not broadcast its SSID.</description>
+                    <returnType type="Boolean" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="vCard contact">
+                <property key="vcardFirstName" type="expression" required="false">
+                    <caption>First name</caption>
+                    <description>Given name of the contact.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardLastName" type="expression" required="false">
+                    <caption>Last name</caption>
+                    <description>Family name of the contact.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardOrganization" type="expression" required="false">
+                    <caption>Organization</caption>
+                    <description>Company or organization.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardTitle" type="expression" required="false">
+                    <caption>Job title</caption>
+                    <description>Role or job title.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardPhone" type="expression" required="false">
+                    <caption>Phone</caption>
+                    <description>Work phone number.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardMobile" type="expression" required="false">
+                    <caption>Mobile</caption>
+                    <description>Mobile phone number.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardEmail" type="expression" required="false">
+                    <caption>Email</caption>
+                    <description>Email address.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardWebsite" type="expression" required="false">
+                    <caption>Website</caption>
+                    <description>URL of the contact's website.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardAddress" type="expression" required="false">
+                    <caption>Address</caption>
+                    <description>Postal address on one line, e.g. 'Street 1, City, 12345, Country'.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardNote" type="expression" required="false">
+                    <caption>Note</caption>
+                    <description>Free text note stored with the contact.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardVersion" type="enumeration" defaultValue="v3">
+                    <caption>vCard version</caption>
+                    <description>3.0 is read by every phone; 4.0 supports more fields.</description>
+                    <enumerationValues>
+                        <enumerationValue key="v3">3.0</enumerationValue>
+                        <enumerationValue key="v4">4.0</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="vcardHomePhone" type="expression" required="false">
+                    <caption>Home phone</caption>
+                    <description>Home phone number.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardBirthday" type="expression" required="false">
+                    <caption>Birthday</caption>
+                    <description>Date of birth.</description>
+                    <returnType type="DateTime" />
+                </property>
+                <property key="vcardStreet" type="expression" required="false">
+                    <caption>Street</caption>
+                    <description>Street and number. When set, the address parts replace the single-line address.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardCity" type="expression" required="false">
+                    <caption>City</caption>
+                    <description>City.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardRegion" type="expression" required="false">
+                    <caption>Region</caption>
+                    <description>State or province.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardPostalCode" type="expression" required="false">
+                    <caption>Postal code</caption>
+                    <description>Postal code.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardCountry" type="expression" required="false">
+                    <caption>Country</caption>
+                    <description>Country.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="vcardPhoto" type="image" required="false">
+                    <caption>Photo</caption>
+                    <description>Static or dynamic image embedded as the contact photo (keep it small, it makes the code much denser).</description>
+                </property>
+                <property key="vcardPhotoUrl" type="expression" required="false">
+                    <caption>Photo URL</caption>
+                    <description>Alternative to 'Photo': a URL of the contact photo. Used when no photo image is set.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Email">
+                <property key="emailTo" type="expression" required="false">
+                    <caption>To</caption>
+                    <description>Recipient email address.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="emailSubject" type="expression" required="false">
+                    <caption>Subject</caption>
+                    <description>Prefilled subject line.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="emailBody" type="expression" required="false">
+                    <caption>Body</caption>
+                    <description>Prefilled message body.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="SMS">
+                <property key="smsNumber" type="expression" required="false">
+                    <caption>Phone number</caption>
+                    <description>Number the SMS is sent to, including the country code.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="smsMessage" type="expression" required="false">
+                    <caption>Message</caption>
+                    <description>Prefilled SMS text.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Phone call">
+                <property key="phoneNumber" type="expression" required="false">
+                    <caption>Phone number</caption>
+                    <description>Number to dial, including the country code, e.g. '+919876543210'.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Geo location">
+                <property key="geoLatitude" type="expression" required="false">
+                    <caption>Latitude</caption>
+                    <description>Latitude in decimal degrees, e.g. 13.0827.</description>
+                    <returnType type="Decimal" />
+                </property>
+                <property key="geoLongitude" type="expression" required="false">
+                    <caption>Longitude</caption>
+                    <description>Longitude in decimal degrees, e.g. 80.2707.</description>
+                    <returnType type="Decimal" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Map link">
+                <property key="mapsProvider" type="enumeration" defaultValue="google">
+                    <caption>Map app</caption>
+                    <description>Which map service the link opens. Uses the latitude and longitude of the Geo location group.</description>
+                    <enumerationValues>
+                        <enumerationValue key="google">Google Maps</enumerationValue>
+                        <enumerationValue key="apple">Apple Maps</enumerationValue>
+                        <enumerationValue key="osm">OpenStreetMap</enumerationValue>
+                        <enumerationValue key="geo">geo: URI (device default)</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="mapsLabel" type="expression" required="false">
+                    <caption>Place label</caption>
+                    <description>Optional name shown for the pin, e.g. 'MX Techies office'.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Calendar event">
+                <property key="calTitle" type="expression" required="false">
+                    <caption>Title</caption>
+                    <description>Name of the event.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="calStart" type="expression" required="false">
+                    <caption>Start</caption>
+                    <description>Start date and time.</description>
+                    <returnType type="DateTime" />
+                </property>
+                <property key="calEnd" type="expression" required="false">
+                    <caption>End</caption>
+                    <description>End date and time. Defaults to one hour after the start.</description>
+                    <returnType type="DateTime" />
+                </property>
+                <property key="calAllDay" type="expression" required="false" defaultValue="false">
+                    <caption>All day</caption>
+                    <description>True for an all-day event (only the dates are used).</description>
+                    <returnType type="Boolean" />
+                </property>
+                <property key="calLocation" type="expression" required="false">
+                    <caption>Location</caption>
+                    <description>Where the event takes place.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="calDescription" type="expression" required="false">
+                    <caption>Description</caption>
+                    <description>Notes added to the event.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="WhatsApp chat">
+                <property key="waNumber" type="expression" required="false">
+                    <caption>Phone number</caption>
+                    <description>WhatsApp number with country code, e.g. '+919876543210'.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="waMessage" type="expression" required="false">
+                    <caption>Message</caption>
+                    <description>Prefilled message.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Telegram">
+                <property key="tgUsername" type="expression" required="false">
+                    <caption>Username</caption>
+                    <description>Telegram username without the @, or a channel name.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="tgMessage" type="expression" required="false">
+                    <caption>Message</caption>
+                    <description>Optional text shared into the chat.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="SEPA bank transfer (EPC)">
+                <property key="epcName" type="expression" required="false">
+                    <caption>Beneficiary name</caption>
+                    <description>Name of the account holder (max 70 characters).</description>
+                    <returnType type="String" />
+                </property>
+                <property key="epcIban" type="expression" required="false">
+                    <caption>IBAN</caption>
+                    <description>IBAN of the beneficiary, spaces are removed.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="epcBic" type="expression" required="false">
+                    <caption>BIC</caption>
+                    <description>BIC of the bank. Optional inside the EEA.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="epcAmount" type="expression" required="false">
+                    <caption>Amount (EUR)</caption>
+                    <description>Amount in euro, 0.01 to 999999999.99. Leave empty to let the payer enter it.</description>
+                    <returnType type="Decimal" />
+                </property>
+                <property key="epcReference" type="expression" required="false">
+                    <caption>Structured reference</caption>
+                    <description>Creditor reference (ISO 11649), e.g. 'RF18539007547034'. Use either this or the remittance text.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="epcText" type="expression" required="false">
+                    <caption>Remittance text</caption>
+                    <description>Free text shown to the payer (max 140 characters).</description>
+                    <returnType type="String" />
+                </property>
+                <property key="epcPurpose" type="expression" required="false">
+                    <caption>Purpose code</caption>
+                    <description>Optional 4-letter ISO 20022 purpose code, e.g. 'SALA'.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Bitcoin payment">
+                <property key="btcAddress" type="expression" required="false">
+                    <caption>Address</caption>
+                    <description>Bitcoin address.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="btcAmount" type="expression" required="false">
+                    <caption>Amount (BTC)</caption>
+                    <description>Amount in BTC.</description>
+                    <returnType type="Decimal" />
+                </property>
+                <property key="btcLabel" type="expression" required="false">
+                    <caption>Label</caption>
+                    <description>Name of the recipient.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="btcMessage" type="expression" required="false">
+                    <caption>Message</caption>
+                    <description>Description of the payment.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="PayPal.Me">
+                <property key="paypalUser" type="expression" required="false">
+                    <caption>PayPal.Me name</caption>
+                    <description>The name after paypal.me/, e.g. 'mxtechies'.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="paypalAmount" type="expression" required="false">
+                    <caption>Amount</caption>
+                    <description>Optional amount.</description>
+                    <returnType type="Decimal" />
+                </property>
+                <property key="paypalCurrency" type="expression" required="false" defaultValue="'USD'">
+                    <caption>Currency</caption>
+                    <description>ISO currency code, e.g. 'USD' or 'EUR'.</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="PromptPay (Thailand)">
+                <property key="ppProxyType" type="enumeration" defaultValue="mobile">
+                    <caption>Proxy type</caption>
+                    <description>What identifies the receiver.</description>
+                    <enumerationValues>
+                        <enumerationValue key="mobile">Mobile number</enumerationValue>
+                        <enumerationValue key="nationalId">National ID or tax ID</enumerationValue>
+                        <enumerationValue key="ewallet">e-Wallet ID</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="ppProxy" type="expression" required="false">
+                    <caption>Proxy value</caption>
+                    <description>Mobile number (with or without country code), national ID or e-Wallet ID.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="ppAmount" type="expression" required="false">
+                    <caption>Amount (THB)</caption>
+                    <description>Optional fixed amount in baht.</description>
+                    <returnType type="Decimal" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="PayNow (Singapore)">
+                <property key="pnProxyType" type="enumeration" defaultValue="mobile">
+                    <caption>Proxy type</caption>
+                    <description>What identifies the receiver.</description>
+                    <enumerationValues>
+                        <enumerationValue key="mobile">Mobile number</enumerationValue>
+                        <enumerationValue key="uen">UEN</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="pnProxy" type="expression" required="false">
+                    <caption>Proxy value</caption>
+                    <description>Mobile number with country code (+65...) or the UEN.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="pnMerchantName" type="expression" required="false">
+                    <caption>Merchant name</caption>
+                    <description>Name shown in the banking app (max 25 characters).</description>
+                    <returnType type="String" />
+                </property>
+                <property key="pnAmount" type="expression" required="false">
+                    <caption>Amount (SGD)</caption>
+                    <description>Optional amount in Singapore dollars.</description>
+                    <returnType type="Decimal" />
+                </property>
+                <property key="pnEditable" type="expression" required="false" defaultValue="true">
+                    <caption>Amount editable</caption>
+                    <description>Whether the payer may change the amount.</description>
+                    <returnType type="Boolean" />
+                </property>
+                <property key="pnReference" type="expression" required="false">
+                    <caption>Reference</caption>
+                    <description>Optional bill or reference number.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="pnExpiry" type="expression" required="false">
+                    <caption>Expiry</caption>
+                    <description>Optional expiry date of the payment request.</description>
+                    <returnType type="DateTime" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="List">
+                <property key="dataSource" type="datasource" isList="true" required="false">
+                    <caption>Data source</caption>
+                    <description>Objects to render one QR code each. Used when 'Render as' is 'List of QR codes'.</description>
+                </property>
+                <property key="listValue" type="expression" dataSource="dataSource" required="false">
+                    <caption>Value per object</caption>
+                    <description>Text or URL to encode for each object, e.g. $currentObject/AssetCode. Build UPI or vCard strings in a calculated attribute if you need them per object.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="listLabel" type="expression" dataSource="dataSource" required="false">
+                    <caption>Label per object</caption>
+                    <description>Optional text shown under each QR code.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="listGap" type="integer" defaultValue="16">
+                    <caption>Gap (px)</caption>
+                    <description>Space between the QR codes in the list.</description>
+                </property>
+                <property key="listFileName" type="expression" dataSource="dataSource" required="false">
+                    <caption>File name per object</caption>
+                    <description>File name (without extension) used for downloads and the ZIP, e.g. $currentObject/AssetCode. Defaults to the file name below.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="listLogoUrl" type="expression" dataSource="dataSource" required="false">
+                    <caption>Logo URL per object</caption>
+                    <description>Optional logo URL per object, e.g. an image URL attribute. Falls back to the logo of the Design tab.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="listLazyRender" type="boolean" defaultValue="true">
+                    <caption>Render when visible</caption>
+                    <description>Renders each code only when it scrolls into view. Recommended for lists of more than a few dozen codes.</description>
+                </property>
+                <property key="listEmptyText" type="textTemplate" required="false">
+                    <caption>Empty message</caption>
+                    <description>Text shown when the data source returns no objects.</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Design">
+            <propertyGroup caption="Size and shape">
+                <property key="size" type="integer" defaultValue="300">
+                    <caption>Size (px)</caption>
+                    <description>Width and height of the QR code in pixels. It scales down to fit its container.</description>
+                </property>
+                <property key="sizeMode" type="enumeration" defaultValue="fixed">
+                    <caption>Sizing</caption>
+                    <description>'Fixed' uses the size in pixels. 'Fit container' stretches the code to the width of its container (the pixel size is still used for exports).</description>
+                    <enumerationValues>
+                        <enumerationValue key="fixed">Fixed size</enumerationValue>
+                        <enumerationValue key="fit">Fit container</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="margin" type="integer" defaultValue="8">
+                    <caption>Margin (px)</caption>
+                    <description>Quiet zone around the code, in pixels.</description>
+                </property>
+                <property key="shape" type="enumeration" defaultValue="square">
+                    <caption>Shape</caption>
+                    <description>Overall shape of the code. 'Circle' places the modules inside a circle.</description>
+                    <enumerationValues>
+                        <enumerationValue key="square">Square</enumerationValue>
+                        <enumerationValue key="circle">Circle</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="renderType" type="enumeration" defaultValue="svg">
+                    <caption>Draw with</caption>
+                    <description>'SVG' stays sharp at any zoom and prints best; 'Canvas' is a bitmap.</description>
+                    <enumerationValues>
+                        <enumerationValue key="svg">SVG</enumerationValue>
+                        <enumerationValue key="canvas">Canvas</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Dots">
+                <property key="dotsType" type="enumeration" defaultValue="rounded">
+                    <caption>Dot style</caption>
+                    <description>Shape of the data modules.</description>
+                    <enumerationValues>
+                        <enumerationValue key="square">Square</enumerationValue>
+                        <enumerationValue key="dots">Dots</enumerationValue>
+                        <enumerationValue key="rounded">Rounded</enumerationValue>
+                        <enumerationValue key="extraRounded">Extra rounded</enumerationValue>
+                        <enumerationValue key="classy">Classy</enumerationValue>
+                        <enumerationValue key="classyRounded">Classy rounded</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="dotsColor" type="string" defaultValue="#000000">
+                    <caption>Color</caption>
+                    <description>Any CSS color, e.g. '#1a73e8' or 'rgb(0,0,0)'.</description>
+                </property>
+                <property key="dotsGradient" type="enumeration" defaultValue="none">
+                    <caption>Gradient</caption>
+                    <description>Fill the dots with a gradient from 'Color' to 'Gradient end color'.</description>
+                    <enumerationValues>
+                        <enumerationValue key="none">None</enumerationValue>
+                        <enumerationValue key="linear">Linear</enumerationValue>
+                        <enumerationValue key="radial">Radial</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="dotsGradientEndColor" type="string" defaultValue="#1a73e8">
+                    <caption>Gradient end color</caption>
+                    <description>Second color of the gradient.</description>
+                </property>
+                <property key="dotsGradientRotation" type="integer" defaultValue="0">
+                    <caption>Gradient rotation (deg)</caption>
+                    <description>Angle of a linear gradient in degrees.</description>
+                </property>
+                <property key="dotsGradientStops" type="object" isList="true" required="false">
+                    <caption>Gradient colour stops</caption>
+                    <description>Optional extra colour stops for the gradient. When given, they replace the two-colour gradient (offset 0 to 100 percent).</description>
+                    <properties>
+                        <propertyGroup caption="General">
+                            <property key="stopOffset" type="integer" defaultValue="50">
+                                <caption>Offset (%)</caption>
+                                <description>Position of the colour along the gradient, 0 = start, 100 = end.</description>
+                            </property>
+                            <property key="stopColor" type="string" defaultValue="#1a73e8">
+                                <caption>Colour</caption>
+                                <description>Any CSS colour.</description>
+                            </property>
+                        </propertyGroup>
+                    </properties>
+                </property>
+                <property key="dotsRoundSize" type="boolean" defaultValue="true">
+                    <caption>Round dot size</caption>
+                    <description>Rounds the module size to whole pixels so edges stay crisp. Turn off for exact sizing.</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Corner squares (eyes)">
+                <property key="cornersSquareType" type="enumeration" defaultValue="default">
+                    <caption>Corner square style</caption>
+                    <description>Shape of the three large finder squares. 'Same as dots' follows the dot style.</description>
+                    <enumerationValues>
+                        <enumerationValue key="default">Same as dots</enumerationValue>
+                        <enumerationValue key="square">Square</enumerationValue>
+                        <enumerationValue key="dot">Dot</enumerationValue>
+                        <enumerationValue key="extraRounded">Extra rounded</enumerationValue>
+                        <enumerationValue key="rounded">Rounded</enumerationValue>
+                        <enumerationValue key="dots">Dots</enumerationValue>
+                        <enumerationValue key="classy">Classy</enumerationValue>
+                        <enumerationValue key="classyRounded">Classy rounded</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="cornersSquareColor" type="string" required="false">
+                    <caption>Color</caption>
+                    <description>Leave empty to use the dot color.</description>
+                </property>
+                <property key="cornersSquareGradient" type="enumeration" defaultValue="none">
+                    <caption>Gradient</caption>
+                    <description>Fill the corner squares with a gradient.</description>
+                    <enumerationValues>
+                        <enumerationValue key="none">None</enumerationValue>
+                        <enumerationValue key="linear">Linear</enumerationValue>
+                        <enumerationValue key="radial">Radial</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="cornersSquareGradientEndColor" type="string" defaultValue="#1a73e8">
+                    <caption>Gradient end color</caption>
+                    <description>Second color of the gradient.</description>
+                </property>
+                <property key="cornersSquareGradientRotation" type="integer" defaultValue="0">
+                    <caption>Gradient rotation (deg)</caption>
+                    <description>Angle of a linear gradient in degrees.</description>
+                </property>
+                <property key="cornersSquareGradientStops" type="object" isList="true" required="false">
+                    <caption>Gradient colour stops</caption>
+                    <description>Optional extra colour stops for the gradient. When given, they replace the two-colour gradient (offset 0 to 100 percent).</description>
+                    <properties>
+                        <propertyGroup caption="General">
+                            <property key="stopOffset" type="integer" defaultValue="50">
+                                <caption>Offset (%)</caption>
+                                <description>Position of the colour along the gradient, 0 = start, 100 = end.</description>
+                            </property>
+                            <property key="stopColor" type="string" defaultValue="#1a73e8">
+                                <caption>Colour</caption>
+                                <description>Any CSS colour.</description>
+                            </property>
+                        </propertyGroup>
+                    </properties>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Corner dots">
+                <property key="cornersDotType" type="enumeration" defaultValue="default">
+                    <caption>Corner dot style</caption>
+                    <description>Shape of the small square inside each finder. 'Same as dots' follows the dot style.</description>
+                    <enumerationValues>
+                        <enumerationValue key="default">Same as dots</enumerationValue>
+                        <enumerationValue key="square">Square</enumerationValue>
+                        <enumerationValue key="dot">Dot</enumerationValue>
+                        <enumerationValue key="rounded">Rounded</enumerationValue>
+                        <enumerationValue key="extraRounded">Extra rounded</enumerationValue>
+                        <enumerationValue key="dots">Dots</enumerationValue>
+                        <enumerationValue key="classy">Classy</enumerationValue>
+                        <enumerationValue key="classyRounded">Classy rounded</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="cornersDotColor" type="string" required="false">
+                    <caption>Color</caption>
+                    <description>Leave empty to use the dot color.</description>
+                </property>
+                <property key="cornersDotGradient" type="enumeration" defaultValue="none">
+                    <caption>Gradient</caption>
+                    <description>Fill the corner dots with a gradient.</description>
+                    <enumerationValues>
+                        <enumerationValue key="none">None</enumerationValue>
+                        <enumerationValue key="linear">Linear</enumerationValue>
+                        <enumerationValue key="radial">Radial</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="cornersDotGradientEndColor" type="string" defaultValue="#1a73e8">
+                    <caption>Gradient end color</caption>
+                    <description>Second color of the gradient.</description>
+                </property>
+                <property key="cornersDotGradientRotation" type="integer" defaultValue="0">
+                    <caption>Gradient rotation (deg)</caption>
+                    <description>Angle of a linear gradient in degrees.</description>
+                </property>
+                <property key="cornersDotGradientStops" type="object" isList="true" required="false">
+                    <caption>Gradient colour stops</caption>
+                    <description>Optional extra colour stops for the gradient. When given, they replace the two-colour gradient (offset 0 to 100 percent).</description>
+                    <properties>
+                        <propertyGroup caption="General">
+                            <property key="stopOffset" type="integer" defaultValue="50">
+                                <caption>Offset (%)</caption>
+                                <description>Position of the colour along the gradient, 0 = start, 100 = end.</description>
+                            </property>
+                            <property key="stopColor" type="string" defaultValue="#1a73e8">
+                                <caption>Colour</caption>
+                                <description>Any CSS colour.</description>
+                            </property>
+                        </propertyGroup>
+                    </properties>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Background">
+                <property key="backgroundTransparent" type="boolean" defaultValue="false">
+                    <caption>Transparent</caption>
+                    <description>Draws no background so the page shows through. Exports keep the transparency (PNG, WEBP, SVG).</description>
+                </property>
+                <property key="backgroundColor" type="string" defaultValue="#ffffff">
+                    <caption>Color</caption>
+                    <description>Background color behind the code.</description>
+                </property>
+                <property key="backgroundRound" type="integer" defaultValue="0">
+                    <caption>Corner rounding (%)</caption>
+                    <description>Rounds the background corners, 0 = square, 100 = fully round.</description>
+                </property>
+                <property key="backgroundGradient" type="enumeration" defaultValue="none">
+                    <caption>Gradient</caption>
+                    <description>Fill the background with a gradient.</description>
+                    <enumerationValues>
+                        <enumerationValue key="none">None</enumerationValue>
+                        <enumerationValue key="linear">Linear</enumerationValue>
+                        <enumerationValue key="radial">Radial</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="backgroundGradientEndColor" type="string" defaultValue="#e8f0fe">
+                    <caption>Gradient end color</caption>
+                    <description>Second color of the gradient.</description>
+                </property>
+                <property key="backgroundGradientRotation" type="integer" defaultValue="0">
+                    <caption>Gradient rotation (deg)</caption>
+                    <description>Angle of a linear gradient in degrees.</description>
+                </property>
+                <property key="backgroundGradientStops" type="object" isList="true" required="false">
+                    <caption>Gradient colour stops</caption>
+                    <description>Optional extra colour stops for the gradient. When given, they replace the two-colour gradient (offset 0 to 100 percent).</description>
+                    <properties>
+                        <propertyGroup caption="General">
+                            <property key="stopOffset" type="integer" defaultValue="50">
+                                <caption>Offset (%)</caption>
+                                <description>Position of the colour along the gradient, 0 = start, 100 = end.</description>
+                            </property>
+                            <property key="stopColor" type="string" defaultValue="#1a73e8">
+                                <caption>Colour</caption>
+                                <description>Any CSS colour.</description>
+                            </property>
+                        </propertyGroup>
+                    </properties>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Logo">
+                <property key="logo" type="image" required="false">
+                    <caption>Logo image</caption>
+                    <description>Static image or dynamic image (System.Image) drawn in the middle of the code.</description>
+                </property>
+                <property key="logoUrl" type="expression" required="false">
+                    <caption>Logo URL</caption>
+                    <description>Alternative to 'Logo image': a URL or data URI of the logo. Used when no logo image is set.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="logoSize" type="integer" defaultValue="40">
+                    <caption>Logo size (%)</caption>
+                    <description>Size of the logo relative to the code. Keep it under about 40% and use error correction 'H' so the code still scans.</description>
+                </property>
+                <property key="logoMargin" type="integer" defaultValue="4">
+                    <caption>Logo margin (px)</caption>
+                    <description>Space kept clear around the logo.</description>
+                </property>
+                <property key="hideBackgroundDots" type="boolean" defaultValue="true">
+                    <caption>Hide dots behind logo</caption>
+                    <description>Removes the modules under the logo instead of drawing the logo on top of them.</description>
+                </property>
+                <property key="logoCrossOrigin" type="enumeration" defaultValue="anonymous">
+                    <caption>Cross-origin</caption>
+                    <description>How the logo is fetched. 'Anonymous' is required for downloads and copy when the logo is on another domain.</description>
+                    <enumerationValues>
+                        <enumerationValue key="anonymous">Anonymous</enumerationValue>
+                        <enumerationValue key="useCredentials">Use credentials</enumerationValue>
+                        <enumerationValue key="none">Not set</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Frame">
+                <property key="showFrame" type="boolean" defaultValue="false">
+                    <caption>Show frame</caption>
+                    <description>Draws a colored frame with a label such as 'Scan me' around the code. The frame is included in downloads, copy and print.</description>
+                </property>
+                <property key="frameLabel" type="textTemplate" required="false">
+                    <caption>Frame label</caption>
+                    <description>Text on the frame, e.g. 'Scan me'.</description>
+                    <translations>
+                        <translation lang="en_US">Scan me</translation>
+                    </translations>
+                </property>
+                <property key="frameLabelPosition" type="enumeration" defaultValue="bottom">
+                    <caption>Label position</caption>
+                    <description>Where the label bar sits.</description>
+                    <enumerationValues>
+                        <enumerationValue key="bottom">Bottom</enumerationValue>
+                        <enumerationValue key="top">Top</enumerationValue>
+                        <enumerationValue key="left">Left</enumerationValue>
+                        <enumerationValue key="right">Right</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="frameStyle" type="enumeration" defaultValue="solid">
+                    <caption>Frame style</caption>
+                    <description>'Solid' fills the frame with the frame colour. 'Outline' draws only a border and a coloured label. 'Pill' keeps the code borderless and shows the label as a rounded pill.</description>
+                    <enumerationValues>
+                        <enumerationValue key="solid">Solid</enumerationValue>
+                        <enumerationValue key="outline">Outline</enumerationValue>
+                        <enumerationValue key="pill">Pill label</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="frameIcon" type="icon" required="false">
+                    <caption>Label icon</caption>
+                    <description>Icon shown before the label text. Image icons are included in exports; glyph icons only on screen.</description>
+                </property>
+                <property key="frameFont" type="string" required="false">
+                    <caption>Label font</caption>
+                    <description>CSS font family for the label, e.g. 'Inter, sans-serif'. Empty uses Helvetica/Arial.</description>
+                </property>
+                <property key="frameColor" type="string" defaultValue="#000000">
+                    <caption>Frame color</caption>
+                    <description>Color of the frame border and label bar.</description>
+                </property>
+                <property key="frameTextColor" type="string" defaultValue="#ffffff">
+                    <caption>Label text color</caption>
+                    <description>Color of the label text.</description>
+                </property>
+                <property key="frameRadius" type="integer" defaultValue="16">
+                    <caption>Frame corner radius (px)</caption>
+                    <description>Rounding of the frame corners.</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Encoding">
+            <propertyGroup caption="QR options">
+                <property key="errorCorrectionLevel" type="enumeration" defaultValue="Q">
+                    <caption>Error correction</caption>
+                    <description>How much of the code may be damaged or covered and still scan: L 7%, M 15%, Q 25%, H 30%. Use H with a logo.</description>
+                    <enumerationValues>
+                        <enumerationValue key="L">L (7%)</enumerationValue>
+                        <enumerationValue key="M">M (15%)</enumerationValue>
+                        <enumerationValue key="Q">Q (25%)</enumerationValue>
+                        <enumerationValue key="H">H (30%)</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="typeNumber" type="integer" defaultValue="0">
+                    <caption>Version (type number)</caption>
+                    <description>QR version 1 to 40, which fixes the module count (21x21 up to 177x177). 0 picks the smallest version that fits the data.</description>
+                </property>
+                <property key="encodingMode" type="enumeration" defaultValue="auto">
+                    <caption>Encoding mode</caption>
+                    <description>Character set used to encode the data. 'Automatic' picks the most compact mode that fits.</description>
+                    <enumerationValues>
+                        <enumerationValue key="auto">Automatic</enumerationValue>
+                        <enumerationValue key="Numeric">Numeric</enumerationValue>
+                        <enumerationValue key="Alphanumeric">Alphanumeric</enumerationValue>
+                        <enumerationValue key="Byte">Byte</enumerationValue>
+                        <enumerationValue key="Kanji">Kanji</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="maxPayloadLength" type="integer" defaultValue="1500">
+                    <caption>Max payload length</caption>
+                    <description>Codes longer than this many characters are not rendered; the message below is shown instead. The QR limit is 2953 bytes at level L, less at higher levels.</description>
+                </property>
+                <property key="payloadTooLongText" type="textTemplate" required="false">
+                    <caption>Too long message</caption>
+                    <description>Shown when the payload exceeds the maximum length.</description>
+                    <translations>
+                        <translation lang="en_US">The content is too long for a QR code.</translation>
+                    </translations>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Scannability check">
+                <property key="checkScannability" type="boolean" defaultValue="true">
+                    <caption>Check scannability</caption>
+                    <description>Decodes the rendered code again after each render and warns when it cannot be read, for example because the logo is too big or the contrast is too low.</description>
+                </property>
+                <property key="scanWarning" type="textTemplate" required="false">
+                    <caption>Warning text</caption>
+                    <description>Shown under the code when the check fails.</description>
+                    <translations>
+                        <translation lang="en_US">This QR code may not scan. Reduce the logo size, raise the error correction or increase the contrast.</translation>
+                    </translations>
+                </property>
+                <property key="scannableAttribute" type="attribute" required="false">
+                    <caption>Scannable attribute</caption>
+                    <description>Optional Boolean attribute that receives the result of the check.</description>
+                    <attributeTypes>
+                        <attributeType name="Boolean" />
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Toolbar">
+            <propertyGroup caption="Buttons">
+                <property key="showDownloadPng" type="boolean" defaultValue="true">
+                    <caption>Download PNG</caption>
+                    <description>Shows a button that downloads the code as PNG.</description>
+                </property>
+                <property key="showDownloadSvg" type="boolean" defaultValue="true">
+                    <caption>Download SVG</caption>
+                    <description>Shows a button that downloads the code as SVG.</description>
+                </property>
+                <property key="showDownloadJpeg" type="boolean" defaultValue="false">
+                    <caption>Download JPEG</caption>
+                    <description>Shows a button that downloads the code as JPEG.</description>
+                </property>
+                <property key="showDownloadWebp" type="boolean" defaultValue="false">
+                    <caption>Download WEBP</caption>
+                    <description>Shows a button that downloads the code as WEBP.</description>
+                </property>
+                <property key="showCopy" type="boolean" defaultValue="true">
+                    <caption>Copy to clipboard</caption>
+                    <description>Shows a button that copies the code as a PNG image to the clipboard.</description>
+                </property>
+                <property key="showPrint" type="boolean" defaultValue="true">
+                    <caption>Print</caption>
+                    <description>Shows a button that opens the print dialog with only the QR code.</description>
+                </property>
+                <property key="showSave" type="boolean" defaultValue="false">
+                    <caption>Save now</caption>
+                    <description>Shows a button that writes the base64 attribute and runs 'On image saved' on demand (single mode with a base64 attribute).</description>
+                </property>
+                <property key="showDownloadZip" type="boolean" defaultValue="true">
+                    <caption>Download all (ZIP)</caption>
+                    <description>List mode: shows a button that downloads every code as PNG in one ZIP file.</description>
+                </property>
+                <property key="showPrintSheet" type="boolean" defaultValue="true">
+                    <caption>Print label sheet</caption>
+                    <description>List mode: shows a button that prints all codes as a label sheet.</description>
+                </property>
+                <property key="showDownloadPdf" type="boolean" defaultValue="true">
+                    <caption>Download label sheet (PDF)</caption>
+                    <description>List mode: shows a button that downloads all codes as a PDF label sheet.</description>
+                </property>
+                <property key="fileName" type="expression" required="false" defaultValue="'qr-code'">
+                    <caption>File name</caption>
+                    <description>Name of the downloaded file without extension.</description>
+                    <returnType type="String" />
+                </property>
+                <property key="buttonStyle" type="enumeration" defaultValue="default">
+                    <caption>Button style</caption>
+                    <description>Atlas button style used for the toolbar.</description>
+                    <enumerationValues>
+                        <enumerationValue key="default">Default</enumerationValue>
+                        <enumerationValue key="primary">Primary</enumerationValue>
+                        <enumerationValue key="secondary">Secondary</enumerationValue>
+                        <enumerationValue key="link">Link</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="toolbarPosition" type="enumeration" defaultValue="bottom">
+                    <caption>Position</caption>
+                    <description>Whether the buttons are shown above or below the code.</description>
+                    <enumerationValues>
+                        <enumerationValue key="bottom">Below the code</enumerationValue>
+                        <enumerationValue key="top">Above the code</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Labels">
+                <property key="labelDownload" type="textTemplate" required="false">
+                    <caption>Download label</caption>
+                    <description>Prefix of the download buttons, followed by the format.</description>
+                    <translations>
+                        <translation lang="en_US">Download</translation>
+                    </translations>
+                </property>
+                <property key="labelCopy" type="textTemplate" required="false">
+                    <caption>Copy label</caption>
+                    <description>Text of the copy button.</description>
+                    <translations>
+                        <translation lang="en_US">Copy</translation>
+                    </translations>
+                </property>
+                <property key="labelCopied" type="textTemplate" required="false">
+                    <caption>Copied label</caption>
+                    <description>Text of the copy button right after a successful copy.</description>
+                    <translations>
+                        <translation lang="en_US">Copied</translation>
+                    </translations>
+                </property>
+                <property key="labelPrint" type="textTemplate" required="false">
+                    <caption>Print label</caption>
+                    <description>Text of the print button.</description>
+                    <translations>
+                        <translation lang="en_US">Print</translation>
+                    </translations>
+                </property>
+                <property key="labelSave" type="textTemplate" required="false">
+                    <caption>Save label</caption>
+                    <description>Text of the 'Save now' button.</description>
+                    <translations>
+                        <translation lang="en_US">Save</translation>
+                    </translations>
+                </property>
+                <property key="labelSaved" type="textTemplate" required="false">
+                    <caption>Saved label</caption>
+                    <description>Text of the 'Save now' button right after saving.</description>
+                    <translations>
+                        <translation lang="en_US">Saved</translation>
+                    </translations>
+                </property>
+                <property key="labelZip" type="textTemplate" required="false">
+                    <caption>ZIP label</caption>
+                    <description>Text of the 'Download all' button.</description>
+                    <translations>
+                        <translation lang="en_US">Download all (ZIP)</translation>
+                    </translations>
+                </property>
+                <property key="labelPrintSheet" type="textTemplate" required="false">
+                    <caption>Print sheet label</caption>
+                    <description>Text of the 'Print label sheet' button.</description>
+                    <translations>
+                        <translation lang="en_US">Print label sheet</translation>
+                    </translations>
+                </property>
+                <property key="labelPdf" type="textTemplate" required="false">
+                    <caption>PDF label</caption>
+                    <description>Text of the 'Download PDF' button.</description>
+                    <translations>
+                        <translation lang="en_US">Download PDF</translation>
+                    </translations>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Label sheet">
+                <property key="sheetColumns" type="integer" defaultValue="3">
+                    <caption>Columns</caption>
+                    <description>Number of labels per row on the printed or PDF sheet.</description>
+                </property>
+                <property key="sheetLabelWidth" type="integer" defaultValue="63">
+                    <caption>Label width (mm)</caption>
+                    <description>Width of one label on the sheet.</description>
+                </property>
+                <property key="sheetLabelHeight" type="integer" defaultValue="38">
+                    <caption>Label height (mm)</caption>
+                    <description>Height of one label on the sheet.</description>
+                </property>
+                <property key="sheetGap" type="integer" defaultValue="3">
+                    <caption>Gap (mm)</caption>
+                    <description>Space between labels.</description>
+                </property>
+                <property key="sheetShowLabel" type="boolean" defaultValue="true">
+                    <caption>Show label text</caption>
+                    <description>Prints the per-object label under each code.</description>
+                </property>
+                <property key="sheetTitle" type="textTemplate" required="false">
+                    <caption>Sheet title</caption>
+                    <description>Optional title printed at the top of the sheet and used as the PDF file name.</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Save to Mendix">
+            <propertyGroup caption="Image attribute">
+                <property key="base64Attribute" type="attribute" required="false">
+                    <caption>Base64 attribute</caption>
+                    <description>String attribute (unlimited length) that receives the rendered image as base64 after every render. Decode it with Community Commons 'Base64DecodeToFile' into a System.Image to use it in documents and emails.</description>
+                    <attributeTypes>
+                        <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+                <property key="base64Format" type="enumeration" defaultValue="png">
+                    <caption>Image format</caption>
+                    <description>Format of the saved image.</description>
+                    <enumerationValues>
+                        <enumerationValue key="png">PNG</enumerationValue>
+                        <enumerationValue key="svg">SVG</enumerationValue>
+                        <enumerationValue key="jpeg">JPEG</enumerationValue>
+                        <enumerationValue key="webp">WEBP</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="base64DataUri" type="boolean" defaultValue="false">
+                    <caption>Include data URI prefix</caption>
+                    <description>Prefixes the value with 'data:image/png;base64,' so it can be used directly as an image source. Leave off for Base64DecodeToFile.</description>
+                </property>
+                <property key="saveDebounce" type="integer" defaultValue="400">
+                    <caption>Save delay (ms)</caption>
+                    <description>Waits this long after the last change before writing the attribute, so typing in a field does not write on every keystroke.</description>
+                </property>
+                <property key="onImageSaved" type="action" required="false">
+                    <caption>On image saved</caption>
+                    <description>Runs after the base64 attribute has been written, e.g. a microflow that stores it as a System.Image.</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Dynamic">
+            <propertyGroup caption="Auto refresh">
+                <property key="refreshInterval" type="integer" defaultValue="0">
+                    <caption>Refresh interval (s)</caption>
+                    <description>Runs 'On refresh' every N seconds, e.g. a nanoflow that fetches a new token. 0 disables the timer.</description>
+                </property>
+                <property key="onRefresh" type="action" required="false">
+                    <caption>On refresh</caption>
+                    <description>Action run on every tick of the refresh interval. Change the attribute the value is based on and the code re-renders.</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Expiry">
+                <property key="expiresAt" type="expression" required="false">
+                    <caption>Expires at</caption>
+                    <description>Date and time the code stops being valid. Shows a countdown and dims the code once expired.</description>
+                    <returnType type="DateTime" />
+                </property>
+                <property key="expiryLabel" type="textTemplate" required="false">
+                    <caption>Countdown label</caption>
+                    <description>Text under the code while it is valid. [time] is replaced by the remaining time, e.g. 04:59.</description>
+                    <translations>
+                        <translation lang="en_US">Expires in [time]</translation>
+                    </translations>
+                </property>
+                <property key="expiredLabel" type="textTemplate" required="false">
+                    <caption>Expired label</caption>
+                    <description>Text shown over the code once it has expired.</description>
+                    <translations>
+                        <translation lang="en_US">Expired</translation>
+                    </translations>
+                </property>
+                <property key="hideWhenExpired" type="boolean" defaultValue="true">
+                    <caption>Blur when expired</caption>
+                    <description>Blurs the code so it cannot be scanned after it expired.</description>
+                </property>
+                <property key="onExpire" type="action" required="false">
+                    <caption>On expire</caption>
+                    <description>Runs once when the expiry time passes, e.g. to fetch a new code.</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Events">
+            <propertyGroup caption="Events">
+                <property key="onClick" type="action" required="false">
+                    <caption>On click</caption>
+                    <description>Runs when the QR code is clicked.</description>
+                </property>
+                <property key="onRender" type="action" required="false">
+                    <caption>On render</caption>
+                    <description>Runs after every render with the encoded value and the scannability result, e.g. to log which codes were generated.</description>
+                    <actionVariables>
+                        <actionVariable key="encodedValue" type="String" caption="Encoded value" />
+                        <actionVariable key="isScannable" type="Boolean" caption="Scannable" />
+                    </actionVariables>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Accessibility">
+            <propertyGroup caption="Accessibility">
+                <property key="ariaLabel" type="textTemplate" required="false">
+                    <caption>Aria label</caption>
+                    <description>Screen reader description of the code.</description>
+                    <translations>
+                        <translation lang="en_US">QR code</translation>
+                    </translations>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+    </properties>
+</widget>
